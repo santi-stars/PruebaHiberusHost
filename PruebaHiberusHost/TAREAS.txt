@@ -11,7 +11,7 @@ PRIORITARIO
 *ExchageController
 -APIweb
 	C POST		1 #####################################
-	R GET		List ##################################
+	----------GET		List ##################################
 	U PUT		1 #####################################
 	D DELETE	1 #####################################
 -URL
@@ -23,7 +23,7 @@ PRIORITARIO
 *TransactionController
 -APIweb
 	C POST		1 #####################################
-	R GET		List ##################################
+	----------GET		List ##################################
 				List by SKU ###########################
 	U PUT		NO ####### Trans. importe negativo ####
 	D DELETE	NO ####### Trans. importe negativo ####
@@ -85,7 +85,7 @@ PRIORITARIO
 
 6 Hosting Con API .NET para hacer llamadas a esta API
 
-*crear host
+*crear host#########
 *Docker
 *Subir
 

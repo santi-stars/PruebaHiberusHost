@@ -11,8 +11,6 @@ namespace WebApiAutores.Utilidades
             // Origen, Destino
             CreateMap<Transaction, TransactionDTO>();
             CreateMap<TransactionDTO, Transaction>();
-            CreateMap<Sum, SumDTO>();
-            CreateMap<SumDTO, Sum>();
         }
     }
 }

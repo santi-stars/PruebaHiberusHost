@@ -2,10 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PruebaHiberusHost.DTOs;
-using PruebaHiberusHost.Entities;
-using PruebaHiberusHost.Services;
-using PruebaHiberusHost.Validations;
-using System.Text.Json;
+using PruebaHiberusHost.Responses;
 
 namespace PruebaHiberusHost.Controllers
 {
@@ -13,23 +10,65 @@ namespace PruebaHiberusHost.Controllers
     [Route("api/transactions")]
     public class TransactionController : ControllerBase
     {
-        private readonly ITransactionService _transactionService;
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<TransactionController> _logger;
-        private const string URL = "https://raw.githubusercontent.com/santi-stars/jsonhiberus/master/Transactions.json";
 
-        public TransactionController(ITransactionService transactionService,
-                                     ApplicationDbContext context,
+        public TransactionController(ApplicationDbContext context,
                                      IMapper mapper,
                                      ILogger<TransactionController> logger)
         {
-            _transactionService = transactionService;
             _context = context;
             _mapper = mapper;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Obtiene una lista de transacciones con un porcentaje aleatorio de filas eliminadas y mezcladas.
+        /// </summary>
+        /// <returns>ActionResult que contiene una lista de objetos TransactionDTO con las transacciones.</returns>
+        [HttpGet]
+        public async Task<ActionResult<List<TransactionsResponse>>> Get()
+        {
+            try
+            {
+                _logger.LogInformation("Obteniendo Transacciones");
+                var transactions = await _context.Transactions.ToListAsync();
+                int totalTransactions = transactions.Count;
+                // Determinar aleatoriamente el porcentaje de filas a eliminar
+                Random rnd = new Random();
+                int percentageToRemove = rnd.Next(10, 51); // Genera un número aleatorio entre 10 y 50 inclusive
+                int rowsToRemove = transactions.Count * percentageToRemove / 100;
+
+                // Eliminar las filas de forma aleatoria
+                for (int i = 0; i < rowsToRemove; i++)
+                {
+                    int randomIndex = rnd.Next(transactions.Count);
+                    transactions.RemoveAt(randomIndex);
+                }
+
+                // Mezclar las transacciones restantes de forma aleatoria
+                transactions = transactions.OrderBy(t => rnd.Next()).ToList();
+
+                var transactionsDTO = _mapper.Map<List<TransactionDTO>>(transactions);
+                // Construye el objeto de respuesta que incluye los ratios de cambio y el número de filas
+                var response = new TransactionsResponse
+                {
+                    TransactionDTOs = transactionsDTO,
+                    ReturnedRows = $"Devuelve aleatoriamente {transactionsDTO.Count} de {totalTransactions} filas en total"
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener las transacciones");
+                return StatusCode(500, "Se produjo un error al procesar la solicitud.");
+            }
+        }
+
+        /*      MÉTODO DIRECTO
+        
         /// <summary>
         /// Obtiene la lista de transacciones.
         /// </summary>
@@ -50,68 +89,6 @@ namespace PruebaHiberusHost.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtiene la lista de transacciones por SKU.
-        /// </summary>
-        /// <param name="SKU">SKU de la transacción.</param>
-        /// <returns>Lista de transacciones en formato DTO.</returns>
-        [HttpGet("{SKU}")]
-        public async Task<ActionResult<List<TransactionDTO>>> GetBySKU([FromRoute][SKUValidation] string SKU)
-        {
-            try
-            {
-                _logger.LogInformation($"Obteniendo Transacciones por SKU = {SKU}");
-                var IsExist = await _context.Transactions.AnyAsync(x => x.SKU == SKU);
-
-                if (!IsExist) return StatusCode(404, $"No existe ninguna transaccion con SKU = {SKU}");
-
-                var transactions = await _context.Transactions.Where(x => x.SKU.Contains(SKU)).ToListAsync();
-                return _mapper.Map<List<TransactionDTO>>(transactions);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener las transacciones por SKU: {ex.Message}");
-                return StatusCode(500, "Se produjo un error al procesar la solicitud.");
-            }
-        }
-
-        /// <summary>
-        /// Obtiene datos de transacciones desde una URL externa y los devuelve como DTO.
-        /// </summary>
-        /// <returns>Una lista de objetos TransactionDTO que representan las transacciones.</returns>
-        [HttpGet]
-        [Route("githubURL")]
-        public async Task<ActionResult<List<TransactionDTO>>> GetJsonFromUrl()
-        {
-            try
-            {
-                _logger.LogInformation("Obteniendo Json de Transacciones a través de URL");
-                var transactions = await _transactionService.GetTransactionsFromUrlAsync(URL);
-
-                return _mapper.Map<List<TransactionDTO>>(transactions);
-            }
-            catch (Exception ex)
-            {
-                // INSERTAR MOCK AQUI----------------------------------------------------------------------------
-                Console.WriteLine($"Error en la solicitud: {ex.Message}");
-                return NoContent();
-            }
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Post(TransactionDTO transactionDTO)
-        {
-            try
-            {
-                _logger.LogInformation("Creando Transacción");
-                await _transactionService.CreateTransaction(transactionDTO, _transactionService, _mapper);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al procesar la solicitud POST Transacción.");
-                return StatusCode(500, "Ocurrió un error al procesar la solicitud.");
-            }
-        }
+        */
     }
 }

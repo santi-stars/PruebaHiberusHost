@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using PruebaHiberusHost.Services;
 using PruebaHiberusHost.Controllers;
-using PruebaHiberusHost.Utils;
 using System.Text.Json.Serialization;
 
 namespace PruebaHiberusHost
@@ -27,11 +24,7 @@ namespace PruebaHiberusHost
 
             services.AddEndpointsApiExplorer();
 
-            services.AddScoped<IExchangeRateUtility, ExchangeRateUtility>();
             services.AddTransient<ExchangeRateController>();
-
-            services.AddScoped<ITransactionService, TransactionService>();
-            services.AddScoped<ITransactionService, TransactionService>();
             services.AddTransient<TransactionController>();
 
             services.AddSwaggerGen(c =>
