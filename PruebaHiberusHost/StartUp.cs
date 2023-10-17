@@ -1,4 +1,10 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using PruebaHiberusHost.Services;
+using PruebaHiberusHost.Controllers;
+using PruebaHiberusHost.Utils;
+using System.Text.Json.Serialization;
 
 namespace PruebaHiberusHost
 {
@@ -8,21 +14,32 @@ namespace PruebaHiberusHost
         {
             Configuration = configuration;
         }
+                public IConfiguration Configuration { get; }
 
-        public IConfiguration Configuration { get; }
-
-        /// <summary>
-        /// Encuentra el camino más corto entre dos monedas en un grafo ponderado utilizando el algoritmo de Dijkstra.
-        /// </summary>
-        // This method gets called by the runtime. Use this method to add services to the container.
+        // Aquí los servicios
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            // Para iniciar el servicio de DbContext
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
+
             services.AddEndpointsApiExplorer();
+
+            services.AddScoped<IExchangeRateUtility, ExchangeRateUtility>();
+            services.AddTransient<ExchangeRateController>();
+
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+            services.AddTransient<TransactionController>();
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPIAutores", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "PruebaHiberusHost", Version = "v1" });
             });
+
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,7 +49,7 @@ namespace PruebaHiberusHost
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPIAutores v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PruebaHiberusHost v1"));
             }
 
             app.UseHttpsRedirection();

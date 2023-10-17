@@ -1,0 +1,8 @@
+BUENAS PRACTICAS!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Diccionarios
+(Lecturas recomendadas al final de) https://doc-hube.demohiberus.com/display/HUBE/Primeros+pasos
+https://doc-hube.demohiberus.com/display/GLOB/Flujo+de+trabajo%2C+estados%2C+reglas+y+campos
+https://doc-hube.demohiberus.com/pages/viewpage.action?pageId=11698687
+https://doc-hube.demohiberus.com/pages/viewpage.action?pageId=1704719
+ver tareas Hibe/AzureDeVos.txt

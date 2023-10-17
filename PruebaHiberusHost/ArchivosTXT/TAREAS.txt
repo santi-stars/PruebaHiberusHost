@@ -1,0 +1,124 @@
+PRIORITARIO
+
+*https://globe-dev.visualstudio.com/Globe%20-%20Management/_workitems/edit/10088 - Prueba técnica
+
+1 rellenar datos de tablas#############################
+2 buscar hosting propio o gratuito sin mantenimiento#################################
+3 subir Json de los datos a una URL al hosting###################################
+4 leer los datos de la URL#########################################################
+5 CRUD (sin) de 3 clases y subir ##################################
+
+*ExchageController
+-APIweb
+	C POST		1 #####################################
+	R GET		List ##################################
+	U PUT		1 #####################################
+	D DELETE	1 #####################################
+-URL
+	C POST		NO ### se hace directamente en APIweb #
+	R GET		ListURL ###############################
+	U PUT		NO ### se hace directamente en APIweb #
+	D DELETE	NO ### se hace directamente en APIweb #
+	  
+*TransactionController
+-APIweb
+	C POST		1 #####################################
+	R GET		List ##################################
+				List by SKU ###########################
+	U PUT		NO ####### Trans. importe negativo ####
+	D DELETE	NO ####### Trans. importe negativo ####
+
+	*decimal calculateExchangeRate() ##################
+		+pasar a UTILs O SERVICE
+	#############	+conv. BANK despues de cada coversión##############
+
+-URL
+	C POST		*1 URL											(DESPUES DE HOSTEAR WEBAPI)!!!!!!!!!!!!!!!
+	R GET		ListURL ###############################
+	U PUT		NO ####### Trans. importe negativo ####
+	D DELETE	NO ####### Trans. importe negativo ####
+	
+*SumController
+-APIweb
+	C POST		NO ###### lo hace internamete #########
+	R GET		List ##################################
+				1 by SKU ##############################
+	U PUT		NO ####### Trans. importe negativo ####
+	D DELETE	NO ####### Trans. importe 0 ###########
+-URL
+	C POST		NO ###### lo hace internamete #########		
+	R GET		1 by SKU (sum. total ya convertida en EUR)
+	U PUT		NO ####### Trans. importe negativo ####
+	D DELETE	NO ####### Trans. importe 0 ###########
+
+
+
+*Pasar a Clase en UTILS método par consultar y obtener datos de una URL
+	#-Inyección de dependencias:
+	Utiliza inyección de dependencias para separar la lógica de negocio
+	de la capa de controladores. Define servicios que se encarguen de
+	la obtención de datos y cálculos de conversión.
+
+
+	****** DUDAS ****** --------------------------------------------------------------------------------------------------------------------------------
+
+	se pueden borrar las migraciones? si pero si se borran todas y no hay autogeneración, se quedaría sin BBDD y habria que hacer Add-Migration...
+
+	error handling controller BUSCAR
+	
+	AppSyncController : ApiControllerBase<ILobeHubeService> <---Hereda de esta
+	public ApiControllerBase(IAppConfigurationSettings settings, IMemoryCache memoryCache, IMapper mapper, IHttpClientFactory clientFactory)
+        {
+	public AppSyncController(IAppConfigurationSettings settings, IMemoryCache memCache, IMapper mapper, IHttpClientFactory clientFactory) : base(settings, memCache, mapper, clientFactory) { }
+	------ le pasa las inyecciones de dependencias a trabes del : base a la clase padre ------
+
+	----------------------------------------------------------------------------------------------------------------------------------------------------
+
+	#-Manejo de excepciones y registro de errores:
+	*TRY-CATCH ----------------------------------------------------------------------ChatGPT
+	Implementa un manejo de excepciones adecuado en tus controladores
+	y servicios. Registra los errores para facilitar la depuración.
+	#-Pruebas unitarias:
+	Escribe pruebas unitarias para tus servicios y controladores utilizando
+	un marco de pruebas como xUnit. Asegúrate de cubrir casos de éxito y
+	casos de error.
+
+6 Hosting Con API .NET para hacer llamadas a esta API
+
+*crear host
+*Docker
+*Subir
+
+*Crear y/o modificar métodos con llamada URL hacia la nueva URL en la App
+Transactions POST		*1 URL (DESPUES DE HOSTEAR WEBAPI)!!!!!!!!!!!!!!!
+
+8 (sin decidir) randomizar el JSON cada vez que se accede ala URL cada x min.
+cambiar de datos (con webApi propia con Hosting)
+9 WEB local: página web a la que se le pase un SKU, y muestre un listado con todas las
+transacciones de ese producto en EUR, y la suma total de todas esas transacciones,
+también en EUR.
+	Persistir datos:
+	Implementa una capa de persistencia para almacenar los datos.
+	Puedes utilizar una base de datos relacional como SQL Server o SQLite para esto.
+
+
+MEJORAS
+
+*actualizar ExchangeRates con alguna API diariamente
++ Tener en cuenta los principios SOLID y correcta capitalización del código.
+
+(HOSTING)
+Azure directamente de VS 60min/dia
+fl0.com con docker
+
+fly.io 1$
+github pages
+Render Docker web...
+Vercel
+Netlify pero creo que no tiene Docker
+
+
+SECUNDARIO
+
+*Modo Programando en Hibe en Iphone
+
